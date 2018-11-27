@@ -44,7 +44,9 @@ class numeroObj(object):
         random.seed(datetime.now())
         collection = []
         for x in range(noOfWord):
-            line = raw[random.randint(1, 104) - 1][:-1]
+            line = raw[random.randint(1, 104) - 1]
+            if "\n" in line:
+            	line = line[:-1]
             rWord = {}
             rWord['number'], rWord['word'] = line.split(":")
             collection.append(rWord)
@@ -66,7 +68,6 @@ class numeroObj(object):
         if number == 0 and self.origin > 0:
             return word
         if number > 1000 and number != 1000000 and number != 1000000000:
-            print self.logarithm
             if self.logarithm == 1:
                 if number >= 2000:
                     word = self.formNumber(
