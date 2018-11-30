@@ -209,9 +209,9 @@ class verbObj(object):
             original = word
             suffix = ["ai", "as", "a", "ons", "ez", "ont"]
             wordEx = ["être", "avoir", "recevoir", "voir", "pourvoir", "savoir", "devoir", "pouvoir", "pleuvoir", "falloir", "valoir",
-                      "vouloir", "s'asseoir", "s'asseoir(2)", "aller", "envoyer", "venir", "acquérir", "cueillir", "courir", "mourir", "souvenir"]
+                      "vouloir", "s'asseoir", "s'asseoir(2)", "aller", "envoyer", "venir", "acquérir", "cueillir", "courir", "mourir", "se souvenir"]
             prefixEx = ["sere", "aure", "recevre", "verre", "pourvoire", "saure", "devre", "pourre", "pleuvre", "faudre", "vaudre",
-                        "voudre", "s'assiére", "s'assoire", "ire", "enverre", "viendre", "acquerre", "cueillere", "courre", "mourre", "souviendre"]
+                        "voudre", "s'assiére", "s'assoire", "ire", "enverre", "viendre", "acquerre", "cueillere", "courre", "mourre", "se souviendre"]
             filler = [" ", " ", " ", " ", " ", " "]
             if word in wordEx:
                 word = prefixEx[wordEx.index(word)]
@@ -293,5 +293,6 @@ if __name__ == "__main__":
     if args['task'] == 'randomize':
         verb.randomize(f)
     if args['task'] == 'conjugation':
+        args["word"] = "se souvenir"
         for i in verb.conjugation(args["word"], int(args["tense"])):
             print i

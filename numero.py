@@ -8,7 +8,8 @@ from datetime import datetime
 class numeroObj(object):
     def __init__(self):
         self.filename = "numero.lib"
-        self.fixWord = ["mille", "million", "milliard"]
+        self.fixWord = ["", "mille", "million",
+                        "milliard", "billion", "billiard"]
         self.logarithm = 0
         self.origin = 0
 
@@ -34,7 +35,10 @@ class numeroObj(object):
 
     def iniOrigin(self, numb):
         self.origin = int(numb)
-        self.logarithm = int(math.floor(math.log(self.origin, 1000)))
+        if numb > 0:
+            self.logarithm = int(math.floor(math.log(self.origin, 1000)))
+        else:
+            self.logarithm = 0
         return 1
 
     def chooseWord(self, noOfWord):
@@ -46,13 +50,16 @@ class numeroObj(object):
         for x in range(noOfWord):
             line = raw[random.randint(1, 104) - 1]
             if "\n" in line:
-            	line = line[:-1]
+                line = line[:-1]
             rWord = {}
             rWord['number'], rWord['word'] = line.split(":")
             collection.append(rWord)
         return collection
 
-    def find_number(self, numb):
+    def find_number(self, numb, iszero):
+        if numb == 0 and iszero == 0:
+            return ""
+        numb = str(numb)
         with open(self.filename, "r") as ins:
             for line in ins:
                 if numb in line:
@@ -63,45 +70,46 @@ class numeroObj(object):
                         else:
                             return new_str[2:]
 
-    def formNumber(self, number):
-        word = ""
-        if number == 0 and self.origin > 0:
-            return word
-        if number > 1000 and number != 1000000 and number != 1000000000:
-            if self.logarithm == 1:
-                if number >= 2000:
-                    word = self.formNumber(
-                        number // 1000) + " " + self.fixWord[self.logarithm - 1] + " " + word + self.formNumber(number % 1000)
-                else:
-                    word = word + \
-                        self.fixWord[self.logarithm] + " " + \
-                        self.formNumber(number % 1000)
-            else:
-                self.logarithm = self.logarithm - 1
-                prefix = self.formNumber(number // 1000)
-                if prefix.endswith("un") and not prefix.endswith("et un") and not prefix.endswith("et un "):
-                    word = prefix + " " + \
-                        self.fixWord[self.logarithm] + \
-                        " " + word + self.formNumber(number % 1000)
-                else:
-                    word = prefix + " " + \
-                        self.fixWord[self.logarithm] + \
-                        "s " + word + self.formNumber(number % 1000)
-
+    def numtoword(self, number):
+        if number <= 100:
+            return self.find_number(number, 0)
         else:
-            if number <= 100 or number == 1000 or number == 1000000 or number == 1000000000:
-                return self.find_number(str(number))
             if number < 200:
-                word = "cent " + self.formNumber(number % 100)
-                return word
+                result = "cent " + self.find_number(number % 100, 0)
             else:
                 if number % 100 == 0:
-                    word = self.formNumber(number // 100) + " cents"
+                    result = self.find_number(number // 100, 0) + " cents"
                 else:
-                    word = self.formNumber(number // 100) + \
-                        " cent " + self.formNumber(number % 100)
-                return word
-        return word
+                    result = self.find_number(
+                        number // 100, 0) + " cent " + self.find_number(number % 100, 0)
+            return result
+
+    def formNumber(self, number):
+        if number == 0:
+            return self.find_number(0, 1)
+        word = ""
+        numList = []
+        wordList = []
+        for exp in range(1, self.logarithm + 1):
+            target = number
+            while target >= 1000**exp:
+                target = target % (1000**exp)
+                if exp > 1:
+                    target = target // (1000**(exp - 1))
+                numList.append(target)
+                wordList.append(self.numtoword(target))
+        numList.append(number // 1000**self.logarithm)
+        wordList.append(self.numtoword(number // 1000**self.logarithm))
+        numList.reverse()
+        wordList.reverse()
+        for i in range(0, len(numList)):
+            if numList[i] == 0:
+                continue
+            connector = self.fixWord[len(numList) - i - 1]
+            if numList[i] > 1 and connector != "mille" and connector != "":
+                connector = connector + "s"
+            word = word + wordList[i] + " " + connector + " "
+        return word[:-2]
 
 
 if __name__ == "__main__":
