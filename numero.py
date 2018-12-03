@@ -108,8 +108,11 @@ class numeroObj(object):
             connector = self.fixWord[len(numList) - i - 1]
             if numList[i] > 1 and connector != "mille" and connector != "":
                 connector = connector + "s"
-            word = word + wordList[i] + " " + connector + " "
-        return word[:-2]
+            if wordList[i] == "un" and connector == "mille":
+                word = word + connector + " "
+            else:
+                word = word + wordList[i] + " " + connector + " "
+        return word.rstrip()
 
 
 if __name__ == "__main__":
