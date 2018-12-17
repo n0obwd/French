@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf- -*-
 
 import random
 import ast
@@ -12,6 +12,7 @@ import sys
 from verb import *
 from numero import *
 from nationalite import *
+from quizlet import *
 
 
 def verbConj1(noOfWord, collection):
@@ -238,8 +239,8 @@ def numero_10(noOfWord):
     score = 0
     for i in range(noOfWord):
         print "=================="
-        question = random.randint(0, 1000001)
-        answer = raw_input(str(question) + ": ")
+        question = random.randint(0, 1000**4)
+        answer = raw_input("{:,}".format(question) + ": ")
         number.iniOrigin(question)
         correct_ans = number.formNumber(question)
         if answer == correct_ans:
@@ -247,7 +248,27 @@ def numero_10(noOfWord):
             print "Correct"
         else:
             print "Not correct"
-            print "%d: %s" % (question, correct_ans)
+            print "%s: %s" % ("{:,}".format(question), correct_ans)
+    return score
+
+
+def quizlet(noOfWord):
+    score = 0
+    quiz = quizObj()
+    quiz.topic()
+    quiz.randomize()
+    collection = quiz.chooseWord(noOfWord)
+    for i in range(noOfWord):
+        print "=================="
+        question = collection[i]['def']
+        answer = raw_input(question + ": ")
+        correct_ans = collection[i]['fr']
+        if answer == correct_ans:
+            score = score + 1
+            print "Correct"
+        else:
+            print "Not correct"
+            print "%s: %s" % (correct_ans, question)
     return score
 
 
@@ -270,7 +291,7 @@ def learn(tense, noOfWord, collection):
 
 
 if __name__ == "__main__":
-    print "\"I will treat you a meal\" Game"
+    print "Time for some French"
     pTense = ["present1", "present2", "present3",
               "present4", "present5", "present6", "participe passe"]
     filename = "verb.lib"
@@ -294,6 +315,8 @@ if __name__ == "__main__":
                         action='store_const', const='e', help='Number 0-1000000')
     parser.add_argument('-f', '--game6', dest='task', action='store_const',
                         const='f', help="Nationalite")
+    parser.add_argument('-q', '--quiz', dest='task', action='store_const',
+                        const='q', help="Learn vocabulary from Quizlet")
     parser.add_argument('-w', '--word', dest='word', help="Number of words")
     args = vars(parser.parse_args())
 
@@ -324,6 +347,8 @@ if __name__ == "__main__":
         if args['task'] == "conjugation2":
             finalScore = verbConj2(
                 int(args['word']), chooseWord(filename, int(args['word'])))
+        if args['task'] == "q":
+            finalScore = quizlet(int(args['word']))
         print "*********************"
         print "Final score: %d/%d" % (finalScore, int(args['word']))
         if finalScore < int(args['word']):
